@@ -1321,23 +1321,35 @@
     };
     var activeChapterName = 'chinatown';
     function setActiveChapter(chapterName) {
-      console.log('chapterName', chapterName);
 
+      console.log('chapterName', chapterName);
+      //show hide markers 
       if (chapterName === 'stateofplay') { //show pins 
         console.log('true!!!!', true);
         pulsationMarkersVisibility(true)
       } else {
         pulsationMarkersVisibility(false)
         infoDiv(true)
-      } 
+      }
+      if (chapterName === 'toolsandknowledge') { //show pins 
+        toolsMarkersVisibility(true)
+      } else {
+        toolsMarkersVisibility(false)
+        hideToolsMarkersInfoDiv();
+      }
+      //show hide markers 
+
 
 
       if (chapterName === activeChapterName) return;
       map.flyTo(chapters[chapterName]);
       document.getElementById(chapterName).setAttribute('class', 'active');
-      document.getElementById(activeChapterName).setAttribute('class', '');
+      if (document.getElementById(activeChapterName) !== null && document.getElementById(activeChapterName) !== undefined) {
+        document.getElementById(activeChapterName).setAttribute('class', '');
+      }
       activeChapterName = chapterName;
     }
+    
     function isElementOnScreen(id) {
       var element = document.getElementById(id);
       var bounds = element.getBoundingClientRect();

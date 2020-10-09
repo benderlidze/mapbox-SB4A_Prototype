@@ -1,5 +1,6 @@
 let currentMarker = -1;
 const allMarkers = [];
+const toolsMarkers = [];
 const legend = document.getElementById('legend');
 const info = document.getElementById('marker-info');
 const next = document.getElementById('next');
@@ -8,6 +9,72 @@ legend.style.display = 'none';
 
 
 map.on('load', () => {
+
+
+    //TOOLS&KNOWLEDGE MARKERS PART 
+    d3.csv("https://docs.google.com/spreadsheets/d/1fuu3zv0fT_pioYVcDODl7txvKMvQdu9XJv2ayKFPjBU/gviz/tq?tqx=out:csv&sheet=Sheet1", s => {
+        console.log('s', s);
+
+        let tempIcon = '';
+        s.forEach(function (d, index) {
+
+            if (d['ICON for map'] !== '') {
+                tempIcon = d['ICON for map'];
+            }
+
+            var div = document.createElement('div');
+            div.className = 'toolsmarker ' //+ filterList;
+            div.setAttribute("index", index)
+
+            console.log('d', d);
+            var icon = document.createElement('img');
+            icon.src = tempIcon;
+            div.appendChild(icon);
+
+            //========= main features part ===============
+
+            var coord = [+d['Longitude'], +d['Latitude']]
+            new mapboxgl.Marker(div)
+                .setLngLat(coord)
+                .addTo(map);
+
+            div.addEventListener('click', (e) => {
+
+                const el = e.target.firstChild || e.target.parentNode;
+                const id = el.getAttribute("index");
+
+                //remove previuos elements
+                document.querySelectorAll(".tools-info").forEach(i=>i.remove())
+
+                var div = document.createElement('div');
+                div.className = 'tools-info' //+ filterList;
+                div.innerHTML = `
+                    <img src="${d['banner-image']}">
+                    <div style="padding:0px 20px;">
+                        <h3>${d['location']}</h3>
+                        <h4 style="color:black">${d['author']}</h4>
+                        <p style="color:black">${d['title']}</p>
+                        <p style="text-align: center;"><img src="${d['link image']}"></p>
+                    </div>
+                `
+                document.body.appendChild(div);
+
+                var center = coord
+                map.flyTo({
+                    center: center,
+                    speed: 0.6, // make the flying slow
+                    zoom: 3
+                });
+
+                e.stopPropagation();
+
+            });
+            toolsMarkers.push(div)
+        })
+
+        toolsMarkersVisibility(false)
+    })
+
 
     d3.csv("https://docs.google.com/spreadsheets/d/1OvT9KX1_V0oy-4dZYOfli-cf9g0CjeapV9-vSxNriEs/gviz/tq?tqx=out:csv&sheet=Sheet1", s => {
 
@@ -170,14 +237,23 @@ map.on('load', () => {
 
 })
 
-function pulsationMarkersVisibility(visible){
-    allMarkers.forEach(i=>{
+function toolsMarkersVisibility(visible) {
+    toolsMarkers.forEach(i => {
+        i.style.display = visible ? '' : 'none'
+    });
+}
+function hideToolsMarkersInfoDiv(){
+    document.querySelectorAll(".tools-info").forEach(i=>i.remove())
+}
+
+function pulsationMarkersVisibility(visible) {
+    allMarkers.forEach(i => {
         i.style.display = visible ? '' : 'none'
         i.querySelector(".ringring").style['border-color'] = "red" //reset pulsation colors
     });
 }
 
-function infoDiv(visible){
+function infoDiv(visible) {
     document.getElementById("stateofplay-info").style.display = visible ? '' : 'none';
     document.getElementById("marker-info").style.display = visible ? 'none' : '';
 }
