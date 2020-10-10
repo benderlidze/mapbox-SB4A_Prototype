@@ -10,7 +10,6 @@ legend.style.display = 'none';
 
 map.on('load', () => {
 
-
     //TOOLS&KNOWLEDGE MARKERS PART 
     d3.csv("https://docs.google.com/spreadsheets/d/1fuu3zv0fT_pioYVcDODl7txvKMvQdu9XJv2ayKFPjBU/gviz/tq?tqx=out:csv&sheet=Sheet1", s => {
         console.log('s', s);
@@ -26,9 +25,16 @@ map.on('load', () => {
             div.className = 'toolsmarker ' //+ filterList;
             div.setAttribute("index", index)
 
-            console.log('d', d);
             var icon = document.createElement('img');
             icon.src = tempIcon;
+            icon.style.width = '40px';
+            icon.style.height = '40px';
+
+            // var cName = document.createElement('div');
+            // cName.append(document.createTextNode(d['location']))
+            // cName.className = 'country-name';
+            //div.appendChild(cName);
+
             div.appendChild(icon);
 
             //========= main features part ===============
@@ -44,7 +50,7 @@ map.on('load', () => {
                 const id = el.getAttribute("index");
 
                 //remove previuos elements
-                document.querySelectorAll(".tools-info").forEach(i=>i.remove())
+                document.querySelectorAll(".tools-info").forEach(i => i.remove())
 
                 var div = document.createElement('div');
                 div.className = 'tools-info' //+ filterList;
@@ -63,7 +69,7 @@ map.on('load', () => {
                 map.flyTo({
                     center: center,
                     speed: 0.6, // make the flying slow
-                    zoom: 3
+                    zoom: 5
                 });
 
                 e.stopPropagation();
@@ -237,13 +243,20 @@ map.on('load', () => {
 
 })
 
+document.addEventListener("click", (e) => { // hide popup on mouse click 
+    const c = e.target.closest(".tools-info");
+    if (c === null) {
+        hideToolsMarkersInfoDiv()
+    } 
+})
+
 function toolsMarkersVisibility(visible) {
     toolsMarkers.forEach(i => {
         i.style.display = visible ? '' : 'none'
     });
 }
-function hideToolsMarkersInfoDiv(){
-    document.querySelectorAll(".tools-info").forEach(i=>i.remove())
+function hideToolsMarkersInfoDiv() {
+    document.querySelectorAll(".tools-info").forEach(i => i.remove())
 }
 
 function pulsationMarkersVisibility(visible) {
